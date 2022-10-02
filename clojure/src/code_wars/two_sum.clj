@@ -27,11 +27,20 @@
 
 (defn twosum-loop [numbers target]
    (loop [combs (combinations numbers)]
-     (if (or (empty? combs)
-             (= target (->> (mapv numbers (first combs))
-                            (apply +))))
-       (first combs)
-       (recur (rest combs)))))
+     (let [comb (first combs)]
+       (if (or (empty? combs)
+               (= target (->> (mapv numbers comb)
+                              (apply +))))
+         comb
+         (recur (rest combs))))))
+
+(defn twosum-loop2 [numbers target]
+  (first (for [x (range (count numbers))
+               y (range (count numbers))
+               :when (and (not= x y)
+                          (= target (apply + (mapv numbers [x y]))))]
+           [x y])))
+
 
 (deftest twosum-example-tests
   (is (= (sort < (twosum '[1 2 3] 4)) '[0 2]))
@@ -40,7 +49,11 @@
 
   (is (= (sort < (twosum-loop '[1 2 3] 4)) '[0 2]))
   (is (= (sort < (twosum-loop '[1234 5678 9012] 14690)) '[1 2]))
-  (is (= (sort < (twosum-loop '[2 2 3] 4)) '[0 1])))
+  (is (= (sort < (twosum-loop '[2 2 3] 4)) '[0 1]))
+
+  (is (= (sort < (twosum-loop2 '[1 2 3] 4)) '[0 2]))
+  (is (= (sort < (twosum-loop2 '[1234 5678 9012] 14690)) '[1 2]))
+  (is (= (sort < (twosum-loop2 '[2 2 3] 4)) '[0 1])))
 
 
 (comment
